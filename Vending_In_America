@@ -1,0 +1,163 @@
+import java.io.*;
+import java.util.*;
+
+class VendingMachine {
+// Location management
+
+    private String currentLocation;
+    private String updatedLocation;
+
+// Inventory management
+    private final String[] chipTypes = {"Salt and Vinegar Utz", "Pringles Original", "Hot Fries"};
+    private final String[] candyTypes = {"Snickers", "Skittles", "Twix"};
+
+    private final int[] chipStock = {10, 8, 4};
+    private final int[] candyStock = {6, 2, 1};
+
+// Prices
+    private final double[] chipPrices = {1.25, 1.50, 1.75};
+    private final double[] candyPrices = {1.00, 1.20, 1.50};
+
+    public VendingMachine(String location) {
+        this.currentLocation = location;
+        this.updatedLocation = location;
+    }
+
+    public void updateLocation(String newLocation) {
+        this.updatedLocation = newLocation;
+
+        Scanner scan = new Scanner(System.in);
+
+        System.out.println("Location updated to: " + updatedLocation);
+
+    }
+
+    public void displayInventory() {
+        System.out.println("Current Inventory, ");
+        System.out.println("Chips: ");
+        for (int i = 0; i < chipTypes.length; i++) {
+            System.out.println(chipTypes[i] + ": " + chipStock[i] + " unit(s)" + "\n");
+        }
+        System.out.println("Candy: ");
+        for (int i = 0; i < candyTypes.length; i++) {
+            System.out.println(candyTypes[i] + ": " + candyStock[i] + " unit(s)" + "\n");
+        }
+    }
+
+    public void checkLowStock() {
+        System.out.println("Items with less than 3 units in stock: ");
+        for (int i = 0; i < chipStock.length; i++) {
+            if (chipStock[i] < 3) {
+                System.out.println(chipTypes[i]);
+            }
+        }
+        for (int i = 0; i < candyStock.length; i++) {
+            if (candyStock[i] < 3) {
+                System.out.println(candyTypes[i] + "\n");
+            }
+        }
+    }
+
+    public void displayPrices() {
+        double highestPrice = Double.MIN_VALUE;
+        double lowestPrice = Double.MAX_VALUE;
+        String highestPricedItem = " ";
+        String lowestPricedItem = " ";
+
+        for (int i = 0; i < chipPrices.length; i++) {
+            if (chipPrices[i] > highestPrice) {
+                highestPrice = chipPrices[i];
+                highestPricedItem = chipTypes[i];
+            }
+            if (chipPrices[i] < lowestPrice) {
+                lowestPrice = chipPrices[i];
+                lowestPricedItem = chipTypes[i];
+            }
+        }
+
+        for (int i = 0; i < candyPrices.length; i++) {
+            if (candyPrices[i] > highestPrice) {
+                highestPrice = candyPrices[i];
+                highestPricedItem = candyTypes[i];
+            }
+            if (candyPrices[i] < lowestPrice) {
+                lowestPrice = candyPrices[i];
+                lowestPricedItem = candyTypes[i];
+            }
+
+        }
+
+        System.out.println("Highest priced item: " + highestPricedItem + " ($"
+                + highestPrice + ")" + "\n");
+        System.out.println("Lowest priced item: " + lowestPricedItem + " ($" + lowestPrice
+                + ")" + "\n");
+    }
+
+    public void saveLocationToFile() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("location.txt"))) {
+            writer.write("Current Location: " + currentLocation + "\n");
+            writer.write("Updated Location: " + updatedLocation + "\n");
+            System.out.println("Location saved to location.txt" + "\n");
+        } catch (IOException e) {
+            System.out.println("Error writing to file: " + e.getMessage());
+        }
+    }
+
+    public void getLocationFile() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("location.txt"))) {
+            String line;
+            int byteData;
+
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            System.out.println("Error writing to file: " + e.getMessage());
+        }
+    }
+
+    public void manageMemory() {
+        System.out.println("Running garbage collection...");
+        System.gc();
+        System.out.println("Garbage collection completed." + "\n");
+    }
+}
+
+public class VendingManagementV2 {
+
+    public static void main(String[] args) {
+
+        String continueInput;
+        String newInput;
+        Scanner scan = new Scanner(System.in);
+
+        VendingMachine vm = new VendingMachine("Main Street");
+        do {
+
+            vm.checkLowStock();
+
+            vm.displayPrices();
+
+            vm.displayInventory();
+
+            System.out.println("Enter a new location to update: ");
+            String newLcation = scan.nextLine();
+            vm.updateLocation(newLcation);
+
+            vm.saveLocationToFile();
+
+            vm.getLocationFile();
+
+            vm.manageMemory();
+
+            System.out.print("Do you want to continue? (yes/no): ");
+            System.out.println(); // Blank line for readability
+            //continueInput = scan.nextLine();
+
+        } while (scan.nextLine().equalsIgnoreCase("yes"));
+        //VendingMachine vm = new VendingMachine(continueInput);
+
+        System.out.println("\n" + "Money makein' moves!");
+        scan.close();
+    }
+}
